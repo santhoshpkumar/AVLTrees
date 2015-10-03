@@ -2,10 +2,22 @@ package org.santhoshkumar;
 
 public class AVLTree {
 
-    Node root;
 
     public static void main(String[] args) {
-	// write your code here
+
+        Node root = null;
+        AVLTree tree = new AVLTree();
+
+        int[] inputs = {4,2,1,5,6,9,14,11,10,20};
+
+        for (int input: inputs ){
+            root = tree.insert(root, input);
+            System.out.print("Inorder Traversal of Constructed AVL Tree :");
+            tree.inOrder(root);
+            System.out.println();
+            System.out.println("New Root of AVL Tree is : " + root.data);
+        }
+
     }
 
     /*
@@ -69,11 +81,52 @@ public class AVLTree {
         return node.height;
     }
 
+    public int getBalance(Node node){
+        if (node == null){
+            return 0;
+        }
+        return getHeight(node.left)-getHeight(node.right);
+    }
+
     public Node insert(Node node, int data){
         if(node == null){
             return new Node(data);
         }
-        return null;
+
+        if(node.data > data){
+            node.left = insert(node.left, data);
+        }else{
+            node.right = insert(node.right, data);
+        }
+        node.height = 1+ Math.max(getHeight(node.left), getHeight(node.right));
+
+        int balanceDiff = getBalance(node);
+
+        if (balanceDiff > 1 && data < node.left.data){
+            return rightRotation(node);
+        }
+        if (balanceDiff > 1 && data > node.left.data){
+            node.left = leftRotation(node.left);
+            return rightRotation(node);
+        }
+        if (balanceDiff < -1 && data > node.right.data){
+            return leftRotation(node);
+        }
+        if (balanceDiff < -1 && data < node.right.data){
+            node.right = rightRotation(node.right);
+            return leftRotation(node);
+        }
+
+        return node;
+    }
+
+    public void inOrder(Node node){
+        if(node == null){
+            return;
+        }
+        inOrder(node.left);
+        System.out.print(node.data+" ");
+        inOrder(node.right);
     }
 
 }
