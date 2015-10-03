@@ -2,7 +2,6 @@ package org.santhoshkumar;
 
 public class AVLTree {
 
-
     public static void main(String[] args) {
 
         Node root = null;
@@ -41,8 +40,8 @@ public class AVLTree {
         y.right = T2;
 
         //Update height
-        x.height = 1+Math.max(getHeight(x.left),getHeight(x.right));
-        y.height = 1+Math.max(getHeight(y.left),getHeight(y.right));
+        y.height = Math.max(getHeight(y.left),getHeight(y.right))+1;
+        x.height = Math.max(getHeight(x.left),getHeight(x.right))+1;
 
         return x;
     }
@@ -68,51 +67,58 @@ public class AVLTree {
         y.left = T2;
 
         //Update height
-        x.height = 1+Math.max(getHeight(x.left),getHeight(x.right));
-        y.height = 1+Math.max(getHeight(y.left),getHeight(y.right));
+        x.height = Math.max(getHeight(x.left),getHeight(x.right))+1;
+        y.height = Math.max(getHeight(y.left),getHeight(y.right))+1;
 
         return x;
     }
 
-    public int getHeight(Node node){
-        if(node == null){
-            return 0;
+    public int getHeight(Node node) {
+        if (node != null) {
+            return node.height;
         }
-        return node.height;
+        return 0;
     }
 
-    public int getBalance(Node node){
-        if (node == null){
-            return 0;
+    public int getBalance(Node node) {
+        if (node != null) {
+            return (getHeight(node.left) - getHeight(node.right));
         }
-        return getHeight(node.left)-getHeight(node.right);
+        return 0;
     }
 
-    public Node insert(Node node, int data){
-        if(node == null){
-            return new Node(data);
+    public Node insert(Node node, int data) {
+        if (node == null) {
+            return (new Node(data));
         }
-
-        if(node.data > data){
+        if (node.data > data) {
             node.left = insert(node.left, data);
-        }else{
+        } else {
             node.right = insert(node.right, data);
         }
-        node.height = 1+ Math.max(getHeight(node.left), getHeight(node.right));
+        // update the node height
+        node.height = Math.max(getHeight(node.left), getHeight(node.right)) + 1;
 
         int balanceDiff = getBalance(node);
 
-        if (balanceDiff > 1 && data < node.left.data){
+        // Left Rotate
+        if (balanceDiff > 1 && data < node.left.data) {
             return rightRotation(node);
         }
-        if (balanceDiff > 1 && data > node.left.data){
+
+        // Right Rotate
+        if (balanceDiff < -1 && data > node.right.data) {
+            return leftRotation(node);
+        }
+
+        // Left Right Rotate
+        if (balanceDiff > 1 && data > node.left.data) {
             node.left = leftRotation(node.left);
             return rightRotation(node);
         }
-        if (balanceDiff < -1 && data > node.right.data){
-            return leftRotation(node);
-        }
-        if (balanceDiff < -1 && data < node.right.data){
+
+        // Right Left Rotate
+        if (balanceDiff < -1 && data < node.right.data) {
             node.right = rightRotation(node.right);
             return leftRotation(node);
         }
@@ -120,28 +126,23 @@ public class AVLTree {
         return node;
     }
 
-    public void inOrder(Node node){
-        if(node == null){
-            return;
+    public void inOrder(Node root) {
+        if (root != null) {
+            inOrder(root.left);
+            System.out.print(" " + root.data);
+            inOrder(root.right);
         }
-        inOrder(node.left);
-        System.out.print(node.data+" ");
-        inOrder(node.right);
     }
-
 }
 
-class Node{
+class Node {
+    int data;
     Node left;
     Node right;
-    int data;
     int height;
-    Node(int data){
+
+    public Node(int data) {
         this.data = data;
-        this.height = 1;
-    }
-    Node(int data, int height){
-        this.data = data;
-        this.height = height;
+        height = 1;
     }
 }
